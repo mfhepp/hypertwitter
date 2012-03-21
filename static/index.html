@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>HyperTwitter Start Page</title>
+	
+    <style type="text/css">
+<!--
+@import url("test.css");
+.programcode {
+	font-family: "Courier New", Courier, monospace;
+}
+-->
+    </style>
+</head>
+
+<body>
+
+<div align="center">
+  <p><img alt="hypertwitter logo" height=116 src="hypertwitter.png" width=535 id=logo style="border:0px"></a><br>
+  </p>
+  <p><a href="http://semantictwitter.appspot.com">http://semantictwitter.appspot.com</a></p>
+  <p>Developed by  <a href="http://www.heppnetz.de">Martin Hepp</a>, <a href="http://www.unibw.de/ebusiness/">E-Business & Web Science Research Group, Universität der Bundeswehr München</a>.  </p>
+</div>
+<h1 id="note"><span style="color:red"> Important note! </span></h1>
+<p><span style="color:red">
+The Twitter API <strong>currently blocks all requests from applications running in the Google App Engine cloud</strong>, unless they authorize themselves.
+HyperTwitter can thus no longer access your tweets and needs a code update to handle that properly, which is planned. However, it may take me a few weeks to get this done.<br/></span>
+If you have any questions, please e-mail to mheppATcomputerDOTorg.
+</p>
+<h1 id="overview"> What's that? </h1>
+<p>HyperTwitter allows users to consolidate or relate pairs of </p>
+<ul>
+  <li>Twitter hashtags, </li>
+  <li>user IDs, and </li>
+  <li>arbitrary URIs. </li>
+</ul>
+<p>by a simple yet powerful syntax. For example, users can easily state that two hashtags mean the same. <br/>
+  <br/>
+  <span class="programcode">#muenchen = #munich</span><br/>
+  <br/>
+  The Hypertwitter application can extract and interpret such special tweets (Twitter messages) for two purposes, namely </p>
+<ol>
+  <li>to <u>expand your queries</u> / search in Twitter (e.g. turn a query for tweets containing #muenchen into those also containing #munich), and</li>
+  <li>to <u>create an RDF graph of all such statements</u> for usage in other Web applications.</li>
+</ol>
+<p>Now, given the millions of Twitter users, this could naturally lead to chaos, so there  are two a simple yet effective ways to control which subset of statements should be considered: 
+<ol>	
+	<li>Just use your own tweets.</li>
+	<li>Create a new public or private Twitter <b>list</b> that contains all users whose tweets you want us to consider. We call the list used for HyperTwitter the &quot;trust list&quot;.</li>
+</ol>	
+<p>In the simplest form, you will just trust your own statements, so you would use your Twitter ID without a list.</p>
+<h1 id="usage"> How can I use HyperTwitter? </h1>
+
+    <p>You can try the effect by doing the following:</p>
+<ol>
+	<li>Sign in to your Twitter account.</li>
+	<li>Make a tweet statement like</li>
+	<br/>
+    <span class="programcode">#newyork = #NYC</span> <br/>or<br/>
+    <span class="programcode">#tennis subtag #sports</span><br/><br/>
+	<li>Try a Twitter query that includes the original hashtag <strong>via the following form</strong>. The query will be expanded based on all alignment statements included in your own tweets or in those that show up in the Twitter list that you specify.</li>	
+</ol>
+<form action="/search" >
+<b>Query</b> 
+<input maxlength=200 name="q" size=60 title="q" value=""> 
+<em>(Example: #munich)</em><br/>
+<br/>
+<b>Twitter User ID</b> <input maxlength=50 name="u" size=15 title="u" value="hypertw"><em>(Example: hypertw)</em>&nbsp;&nbsp;
+<b>List ID</b> 
+<input maxlength=60 name="list" size=40 title="list" value="">&nbsp;
+<em>(optional, needed only if you want to use a list)</em><br/><br/>
+<b>User password</b> <input name="p" type="password" title="p" value="" size=20 maxlength=60>&nbsp; 
+<em>(optional, needed only if the user status or the list is private)</em><br/>
+<input name=button type=submit value="Search!">
+</form><br/>
+
+If you want to use your friends' HyperTwitter tweets to help you expand your searches, you would simply
+<ol>
+	<li>Create a new twitter list for you, e.g.<br/>
+      <em><br/>
+      http://twitter.com/mfhepp/test </em><br/>
+      <br/></li>
+	<li>Add yourself and other twitter users whom you trust to that list.</li>
+    <li>Use the list ID and your username in the form above. </li>
+</ol>
+
+<h1 id="syntax">HyperTwitter Syntax</h1>
+<h2>Basics</h2>
+<p><span class="programcode">#iswc09 = #iswc2009 </span>or<span class="programcode"> #iswc09 sameas #iswc2009 </span></p>
+<p>The hashtag #iswc09 is equivalent to #iswc2009. (in RDF: <span class="programcode">tags:iswc09 tag:equivalentTag tags:iswc2009</span>) </p>
+<p class="programcode">#iswc09 subtag #iswc </p>
+<p>The hashtag #iswc09 is a specialization of #iswc. (in RDF: <span class="programcode">tags:iswc09 skos:broader tags:iswc</span>) </p>
+<p class="programcode">@mfhepp = @martinhepp  </p>
+<p>The user @mfhepp is the same individual as the user @martinhepp. (in RDF: <span class="programcode">users:mfhepp owl:sameAs users:martinhepp</span>) </p>
+<p><strong>Notes:</strong> The formal semantics of &quot;=&quot; or &quot;sameas&quot; depends on the type of the subject and object of the statement. For tags it is <span class="programcode">tag:equivalentTag</span>, for individuals it is <span class="programcode">owl:sameAs</span>, and for http_uris it is also <span class="programcode">owl:sameAs</span>. Other combinations will be ignored. </p>
+<h2>Using predefined vocabularies</h2>
+<p>You can also use arbitrary predicates from propular Web vocabularies, like foaf, sioc, gr, rev, etc.:</p>
+<p> <span class="programcode">@mfhepp foaf:knows @kidehen <br/>
+@mfhepp foaf:name &quot;Martin Hepp&quot; <br/>
+@mfhepp foaf:birthday &quot;07-11&quot; <br/>
+iswc09 skos:broader #iswc </span>(equivalent to  <span class="programcode">#iswc09 subtag #iswc</span>)<br/>
+<span class="programcode">@microsoft a gr:BusinessEntity</span> or <span class="programcode">@microsoft rdf:type gr:BusinessEntity </span></p>
+
+<h2>Introducing new tags for types of relationships </h2>
+<p>With a simple <strong>greater sign,</strong> you can introduce tags for types of relationships, i.e. new properties. </p>
+<p class="programcode">#munich &gt;translation #muenchen <br/>
+@mfhepp &gt;dob &quot;1971-07-11&quot; <br/>
+@mfhepp &gt;hasname &quot;Martin Hepp&quot; </p>
+<h2>Using http URIs</h2>
+<p>Subjects and objects of the statements can be arbitrary http URIs.</p>
+<p class="programcode">@mfhepp &gt;attends http://www.iswc2010.org/#conference <br/>
+http://www.iswc2010.org/ &gt;successor http://www.iswc2009.org/ </p>
+<p><strong>Notes:</strong> HTTP URIs will not be used directly, but a new URI will be created and linked to the original URI via <span class="programcode">foaf:topic</span>. Abbreviated URIs (bit.ly etc.) should be expanded but are not at the moment. </p>
+<h2>Multiple statements in a single tweet</h2>
+<p>A single tweet can contain more than one HyperTwitter statement. Simply insert dots as delimiters:</p>
+<p class="programcode">@mfhepp foaf:knows @kidehen . @mfhepp foaf:name &quot;Martin Hepp&quot; </p>
+<p><strong>Note:</strong> Whitespace is significant.</p>
+<h1 id="api">API Access</h1>
+<p>All functionality is available for other applications via four REST-style API URIs:
+  <br/>
+<h2>RDF/XML representation of all HyperTwitter statements in the given Twitter list</h2>
+<b>http://semantictwitter.appspot.com/rdf</b>?<strong>u</strong>=<em>&lt;user</em>&gt;&amp;<strong>list</strong>=<em>&lt;list&gt;</em>&amp;<strong>p</strong>=<em>&lt;password&gt;</em><br/>
+</p>
+<p>This handler returns the RDF graph extracted from the given trust list. It supports the following parameters:</p>
+<p class="programcode">user = ID of the Twitter user or list owner, without "@"<br/>
+list (optional)= Twitter ID of the list that contains the hypertagging statements to trust<br/>
+password (optional) = password for user, needed only if the user status or list is private</p>
+
+<p class="programcode"><strong>Example:</strong>
+http://semantictwitter.appspot.com/rdf?u=hypertw&amp;list=trust
+</p>
+
+<h2>Twitter search with query expansion</h2>
+There are three services that basically take the initial query plus the user ID and list name of the "trust" list and expand all hashtags and user IDs from the original qiuery and expand the query to all additional usernames and hashtags that are stated to be equivalent (<span class="programcode">tag:equivalentTag / owl:sameAs</span>) or more specific (<span class="programcode">skos:broader</span>).	
+<p><b>http://semantictwitter.appspot.com/search</b>?<strong>q</strong>=<em>&lt;query</em>&gt;&amp;<strong>u</strong>=<em>&lt;user</em>&gt;&amp;<strong>list</strong>=<em>&lt;list&gt;</em>&amp;<strong>p</strong>=<em>&lt;password&gt;</em><br/>
+</p>
+<p>This handler expands the twitter search API for HTML output. 
+  <br/>
+  <br/>
+    <b>http://semantictwitter.appspot.com/search.atom</b>?<strong>q</strong>=<em>&lt;query</em>&gt;&amp;<strong>u</strong>=<em>&lt;user</em>&gt;&amp;<strong>list</strong>=<em>&lt;list&gt;</em>&amp;<strong>p</strong>=<em>&lt;password&gt;</em><br/>
+</p>
+<p>This handler expands the twitter search API for Atom output. 
+  <br/>
+  <br/>
+  <b>http://semantictwitter.appspot.com/search.json</b>?<strong>q</strong>=<em>&lt;query</em>&gt;&amp;<strong>u</strong>=<em>&lt;user</em>&gt;&amp;<strong>list</strong>=<em>&lt;list&gt;</em>&amp;<strong>p</strong>=<em>&lt;password&gt;</em><br/>
+</p>
+<p>This handler expands the twitter search API for JSON output.</p>
+<p>These three services require at least the following three parameters:</p>
+<p class="programcode">query = Twitter query string<br/>
+user = Twitter user ID of the list owner who controls the &quot;trust&quot; list<br/>
+list = Twitter ID of the list that contains the hypertagging statements to trust<br/>
+password (optional) = password for user, needed only if the list is private</p>
+<p class="programcode"><strong>Examples:</strong><br/>
+<a href="http://semantictwitter.appspot.com/search?q=%23munich&u=hypertw&list=trust">http://semantictwitter.appspot.com/search?q=%23munich&amp;u=hypertw&amp;list=trust</a><br/>
+<a href="http://semantictwitter.appspot.com/search.atom?q=%23munich&u=hypertw&list=trust">http://semantictwitter.appspot.com/search.atom?q=%23munich&amp;u=hypertw&amp;list=trust</a><br/>
+<a href="http://semantictwitter.appspot.com/search.json?q=%23munich&u=hypertw&list=trust">http://semantictwitter.appspot.com/search.json?q=%23munich&amp;u=hypertw&amp;list=trust</a></p>
+<p>In addition, the handlers will pass along all regular Twitter search API parameters. </p>
+<h1 id="publications">Publications</h1>
+<p>Martin Hepp: <em><a href="http://www.heppnetz.de/files/hypertwitter-TR.pdf">HyperTwitter: Collaborative Knowledge Engineering via Twitter Messages</a></em>, Technical Report 2010-01, Universität der Bundeswehr München.<br/>
+</p>
+
+<hr />
+<p><strong>Developer:</strong>  Martin Hepp</p>
+<p><strong>Acknowledgments: </strong>HyperTwitter is inspired by the Tags4Tags approach as described in: Leyla Jael García-Castro, Martin Hepp, Alexander García: <em>Tags4Tags: Using Tagging to Consolidate Tags,</em> in: DEXA 2009. Proceedings of the 20th International Conference on Database and Expert Systems Applications, August 31 - September 4, 2009, Linz, Austria, Springer LNCS</p>
+<p><strong>Disclaimer: </strong>This service is provided by Martin Hepp  from the E-Business and Web Science Research Group at Bundeswehr University Munich as it is with no explicit or implicit guarantees. </p>
+<p><strong>Contact:</strong> Prof. Dr. Martin Hepp, Professur für ABWL, insbesondere E-Business, Universität der Bundeswehr München, Werner-Heisenberg-Weg 39, D-85579 Neubiberg, Germany, Phone +49-89-6004-4217, E-mail: <a href="mailto:tools@ebusiness-unibw.org">tools@ebusiness-unibw.org</a>, <a href="http://www.unibw.de/ebusiness/">http://www.unibw.de/ebusiness/</a>.</p>
+<p align="center"><img src="logo_ebusiness.gif" alt="e-business &amp; web science research group" width="173" height="40" longdesc="http://www.unibw.de/ebusiness/" /></p>
+<p align="center"><img src="logo_unibw.gif" alt="universitaet der bundeswehr muenchen" width="214" height="40" longdesc="http://www.unibw.de" /></p>
+</body>
+</html>
